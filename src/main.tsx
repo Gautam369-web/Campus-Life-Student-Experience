@@ -7,19 +7,18 @@ import { SpaceAvailability } from './components/SpaceAvailability';
 import { LostFound } from './components/LostFound';
 import { EventFeed } from './components/EventFeed';
 import { ChatWidget } from './components/ChatWidget';
+import { CampusHeatmap } from './components/CampusHeatmap';
 import { LandingPage } from './pages/LandingPage';
-import { ProjectOverviewModal } from './components/ProjectOverviewModal';
 
-type TabType = 'all' | 'spaces' | 'lost' | 'events' | 'chat';
+type TabType = 'all' | 'heatmap' | 'spaces' | 'lost' | 'events' | 'chat';
 
 // Main app component (the dashboard with tabs)
 const MainApp: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [isOverviewOpen, setIsOverviewOpen] = useState(false);
 
   const urlTab = searchParams.get('tab') as TabType | null;
-  const validTabs: TabType[] = ['all', 'spaces', 'lost', 'events', 'chat'];
+  const validTabs: TabType[] = ['all', 'heatmap', 'spaces', 'lost', 'events', 'chat'];
   const initialTab: TabType = urlTab && validTabs.includes(urlTab) ? urlTab : 'all';
 
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
@@ -118,38 +117,7 @@ const MainApp: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <button
-              onClick={() => setIsOverviewOpen(true)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 14px',
-                background: 'rgba(255, 255, 255, 0.9)',
-                border: '1px solid #cbd5e1',
-                borderRadius: '20px',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                color: '#334155',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.04)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#2563eb';
-                e.currentTarget.style.color = '#ffffff';
-                e.currentTarget.style.borderColor = '#2563eb';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
-                e.currentTarget.style.color = '#334155';
-                e.currentTarget.style.borderColor = '#cbd5e1';
-              }}
-            >
-              📋 Project Overview
-            </button>
-
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span
               style={{
                 display: 'inline-flex',
@@ -182,6 +150,7 @@ const MainApp: React.FC = () => {
         >
           {[
             { id: 'all', label: '📊 All-in-One Dashboard' },
+            { id: 'heatmap', label: '🗺️ Campus Heatmap (IoT)' },
             { id: 'spaces', label: '🏢 Study Spaces' },
             { id: 'lost', label: '🔍 Lost & Found' },
             { id: 'events', label: '📅 Events Feed' },
@@ -238,6 +207,13 @@ const MainApp: React.FC = () => {
           </div>
         )}
 
+        {activeTab === 'heatmap' && (
+          <div>
+            <Dashboard onNavigateTab={(tab) => handleTabChange(tab as TabType)} />
+            <CampusHeatmap />
+          </div>
+        )}
+
         {activeTab === 'spaces' && (
           <div>
             <Dashboard onNavigateTab={(tab) => handleTabChange(tab as TabType)} />
@@ -276,9 +252,6 @@ const MainApp: React.FC = () => {
         >
           Campus Companion • Live Hackathon Build
         </footer>
-
-        {/* In-App Project Overview & Architecture Modal */}
-        <ProjectOverviewModal isOpen={isOverviewOpen} onClose={() => setIsOverviewOpen(false)} />
       </div>
     </div>
   );

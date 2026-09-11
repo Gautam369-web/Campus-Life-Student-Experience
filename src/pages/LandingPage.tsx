@@ -3,7 +3,6 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, Float, Html } from '@react-three/drei';
 import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
-import { ProjectOverviewModal } from '../components/ProjectOverviewModal';
 
 // -------------------------------------------------------------
 // 3D Models for Feature Pods
@@ -474,7 +473,7 @@ const SceneEnvironment: React.FC = () => {
 // Central Campus Nexus: Rotating 3D Diamond with 3D-Anchored Card
 // -------------------------------------------------------------
 interface CentralDiamondNexusProps {
-  onSelectTab: (tab: 'spaces' | 'lost' | 'events' | 'chat') => void;
+  onSelectTab: (tab: 'spaces' | 'lost' | 'events' | 'chat' | 'heatmap') => void;
   onEnterDashboard: () => void;
 }
 
@@ -707,6 +706,39 @@ const CentralDiamondNexus: React.FC<CentralDiamondNexusProps> = ({ onSelectTab, 
             </button>
           </div>
 
+          {/* New Killer Feature: Live Acoustic & Crowd Telemetry Pathfinder */}
+          <button
+            onClick={() => onSelectTab('heatmap')}
+            style={{
+              width: '100%',
+              background: 'linear-gradient(135deg, rgba(245, 243, 255, 0.95), rgba(237, 233, 254, 0.9))',
+              border: '1px solid #ddd6fe',
+              borderRadius: '10px',
+              padding: '6px 10px',
+              color: '#6d28d9',
+              fontSize: '0.74rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              marginBottom: '10px',
+              transition: 'all 0.15s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#ede9fe';
+              e.currentTarget.style.borderColor = '#c4b5fd';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, rgba(245, 243, 255, 0.95), rgba(237, 233, 254, 0.9))';
+              e.currentTarget.style.borderColor = '#ddd6fe';
+            }}
+          >
+            <span>🗺️ Live Heatmap & Decibel Telemetry (31 dB)</span>
+            <span>→</span>
+          </button>
+
           <button
             onClick={onEnterDashboard}
             style={{
@@ -738,9 +770,8 @@ const CentralDiamondNexus: React.FC<CentralDiamondNexusProps> = ({ onSelectTab, 
 // -------------------------------------------------------------
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  const [isOverviewOpen, setIsOverviewOpen] = useState(false);
 
-  const handleSelectTab = (tab: 'spaces' | 'lost' | 'events' | 'chat') => {
+  const handleSelectTab = (tab: 'spaces' | 'lost' | 'events' | 'chat' | 'heatmap') => {
     navigate(`/dashboard?tab=${tab}`);
   };
 
@@ -822,35 +853,6 @@ export const LandingPage: React.FC = () => {
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'liveBeacon 2s infinite' }}></span>
             Campus Online
           </div>
-
-          <button
-            onClick={() => setIsOverviewOpen(true)}
-            style={{
-              background: 'rgba(255, 255, 255, 0.9)',
-              color: '#334155',
-              border: '1px solid #cbd5e1',
-              padding: '8px 16px',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              borderRadius: '12px',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.04)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#f1f5f9';
-              e.currentTarget.style.color = '#0f172a';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
-              e.currentTarget.style.color = '#334155';
-            }}
-          >
-            📋 Project Overview
-          </button>
 
           <button
             onClick={() => navigate('/dashboard')}
@@ -1066,9 +1068,6 @@ export const LandingPage: React.FC = () => {
           <span>Scroll to zoom</span>
         </div>
       </div>
-
-      {/* In-App Project Overview Modal */}
-      <ProjectOverviewModal isOpen={isOverviewOpen} onClose={() => setIsOverviewOpen(false)} />
     </div>
   );
 };

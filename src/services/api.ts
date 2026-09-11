@@ -91,3 +91,41 @@ export const sendChatMessage = async (message: string): Promise<{ response: stri
   });
   return response.json();
 };
+
+export type NoiseCategory = 'whisper' | 'quiet' | 'moderate' | 'lively';
+export type CrowdHeatLevel = 'low' | 'moderate' | 'high' | 'critical';
+
+export interface TelemetryZone {
+  id: string;
+  name: string;
+  building: string;
+  floor: string;
+  zoneType: 'silent' | 'collaborative' | 'social' | 'lab';
+  capacity: number;
+  currentOccupancy: number;
+  decibelLevel: number;
+  noiseCategory: NoiseCategory;
+  crowdHeat: CrowdHeatLevel;
+  powerOutletsAvailable: number;
+  powerStatus: 'plentiful' | 'moderate' | 'scarce';
+  wifiSpeedMbps: number;
+  wifiLatencyMs: number;
+  airQualityAqi: number;
+  amenities: string[];
+  coordinates: { x: number; y: number; width: number; height: number };
+}
+
+export const fetchTelemetryZones = async (): Promise<TelemetryZone[]> => {
+  const response = await fetch(`${API_BASE}/telemetry`);
+  return response.json();
+};
+
+export const simulateTelemetryMode = async (mode: 'rush' | 'quiet' | 'reset'): Promise<{ success: boolean; mode: string; telemetryZones: TelemetryZone[] }> => {
+  const response = await fetch(`${API_BASE}/telemetry/simulate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mode })
+  });
+  return response.json();
+};
+

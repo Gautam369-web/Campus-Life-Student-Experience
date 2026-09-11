@@ -8,9 +8,10 @@
 **Campus Companion** is an all-in-one real-time web platform engineered to eliminate everyday campus friction for students, faculty, and administrators. It unifies four mission-critical campus domains into a single cohesive experience:
 
 1. **Live Study Space & Lab Occupancy Tracker** — Real-time monitoring and toggling of quiet study zones, labs, and collaborative halls.
-2. **Lost & Found Verification Hub** — Centralized reporting, browsing, and authenticated claiming of lost property.
-3. **Campus Events & Workshop Feed** — Dynamic discovery of upcoming hackathons, tech talks, and cultural fests with one-click calendar sync.
-4. **Intelligent Campus AI Assistant** — Natural language query interface connected directly to real-time database state.
+2. **Interactive Campus Heatmap & Acoustic Telemetry (Digital Twin)** — Real-time ambient decibel (dB) noise tracking, thermal crowd heat mapping, available AC power outlets, and AI 1-click spot pathfinding.
+3. **Lost & Found Verification Hub** — Centralized reporting, browsing, and authenticated claiming of lost property.
+4. **Campus Events & Workshop Feed** — Dynamic discovery of upcoming hackathons, tech talks, and cultural fests with one-click calendar sync.
+5. **Intelligent Campus AI Assistant** — Natural language query interface connected directly to real-time database state and acoustic sensors.
 
 The platform greets students with an interactive **3D Campus Galaxy** built in Three.js and React Three Fiber, harmonized with a sleek **glassmorphic dashboard**.
 
@@ -111,13 +112,15 @@ flowchart TB
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/spaces` | List all study spaces & occupancy | None |
 | `PATCH` | `/api/spaces/:id` | Toggle space occupancy status | `{ occupied: boolean }` |
+| `GET` | `/api/telemetry` | Real-time digital twin & acoustic noise zones | None |
+| `POST` | `/api/telemetry/simulate` | Pitch simulation trigger (rush / quiet / reset) | `{ mode: "rush" \| "quiet" \| "reset" }` |
 | `GET` | `/api/lost` | List all reported lost/found items | None |
 | `POST` | `/api/lost` | Report newly lost or found property | `{ title, description, location }` |
 | `PATCH` | `/api/lost/:id` | Update item status (e.g. claim item) | `{ status: "claimed" }` |
 | `GET` | `/api/events` | List all upcoming campus events | None |
 | `GET` | `/api/events/recommend` | Top recommended upcoming events | None |
 | `POST` | `/api/events` | Create a new campus event | `{ title, description, startsAt, ... }` |
-| `POST` | `/api/chat` | Query the AI Campus Assistant | `{ message: string }` |
+| `POST` | `/api/chat` | Query the AI Campus Assistant (spaces, quiet spots, items) | `{ message: string }` |
 
 ---
 

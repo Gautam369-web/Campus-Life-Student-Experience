@@ -182,38 +182,31 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigateTab }) => {
           </p>
         </div>
 
-        {/* Quick Map Stat Card */}
+        {/* Live Telemetry & Heatmap Stat Card */}
         <div
+          onClick={() => onNavigateTab && onNavigateTab('heatmap')}
           style={{
-            background: 'linear-gradient(135deg, rgba(245, 243, 255, 0.8), rgba(237, 233, 254, 0.6))',
+            background: 'linear-gradient(135deg, rgba(245, 243, 255, 0.85), rgba(237, 233, 254, 0.65))',
             padding: '20px',
             borderRadius: '16px',
-            border: '1px solid rgba(221, 214, 254, 0.8)'
+            border: '1px solid rgba(221, 214, 254, 0.9)',
+            cursor: onNavigateTab ? 'pointer' : 'default',
+            transition: 'transform 0.15s ease'
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ fontSize: '1.5rem' }}>🗺️</span>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6d28d9', background: 'rgba(255,255,255,0.8)', padding: '2px 8px', borderRadius: '20px' }}>
-              Live
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6d28d9', background: 'rgba(255,255,255,0.85)', padding: '2px 8px', borderRadius: '20px' }}>
+              Digital Twin
             </span>
           </div>
-          <h3 style={{ margin: '12px 0 4px', fontSize: '1rem', color: '#5b21b6' }}>Campus Map</h3>
-          <div
-            style={{
-              height: '42px',
-              background: 'rgba(255,255,255,0.7)',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '0.8rem',
-              color: '#6d28d9',
-              marginTop: '8px',
-              fontWeight: 500
-            }}
-          >
-            📍 Central Campus Hub
-          </div>
+          <h3 style={{ margin: '12px 0 4px', fontSize: '1rem', color: '#5b21b6' }}>Campus Heatmap</h3>
+          <p style={{ margin: 0, fontSize: '1.8rem', fontWeight: 800, color: '#6d28d9' }}>
+            38 <span style={{ fontSize: '1rem', fontWeight: 500, color: '#8b5cf6' }}>dB Avg</span>
+          </p>
+          <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: '#7c3aed' }}>
+            Live decibel & crowd telemetry →
+          </p>
         </div>
       </div>
     </Glass>
