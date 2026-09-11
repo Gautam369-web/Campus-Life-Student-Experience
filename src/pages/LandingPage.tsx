@@ -3,6 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, Float, Html } from '@react-three/drei';
 import { useNavigate } from 'react-router-dom';
 import * as THREE from 'three';
+import { ProjectOverviewModal } from '../components/ProjectOverviewModal';
 
 // -------------------------------------------------------------
 // 3D Models for Feature Pods
@@ -737,6 +738,7 @@ const CentralDiamondNexus: React.FC<CentralDiamondNexusProps> = ({ onSelectTab, 
 // -------------------------------------------------------------
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const [isOverviewOpen, setIsOverviewOpen] = useState(false);
 
   const handleSelectTab = (tab: 'spaces' | 'lost' | 'events' | 'chat') => {
     navigate(`/dashboard?tab=${tab}`);
@@ -820,6 +822,35 @@ export const LandingPage: React.FC = () => {
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'liveBeacon 2s infinite' }}></span>
             Campus Online
           </div>
+
+          <button
+            onClick={() => setIsOverviewOpen(true)}
+            style={{
+              background: 'rgba(255, 255, 255, 0.9)',
+              color: '#334155',
+              border: '1px solid #cbd5e1',
+              padding: '8px 16px',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+              borderRadius: '12px',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.04)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#f1f5f9';
+              e.currentTarget.style.color = '#0f172a';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+              e.currentTarget.style.color = '#334155';
+            }}
+          >
+            📋 Project Overview
+          </button>
 
           <button
             onClick={() => navigate('/dashboard')}
@@ -1035,6 +1066,9 @@ export const LandingPage: React.FC = () => {
           <span>Scroll to zoom</span>
         </div>
       </div>
+
+      {/* In-App Project Overview Modal */}
+      <ProjectOverviewModal isOpen={isOverviewOpen} onClose={() => setIsOverviewOpen(false)} />
     </div>
   );
 };
