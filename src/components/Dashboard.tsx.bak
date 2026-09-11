@@ -1,0 +1,12 @@
+import React from 'react';
+import { Glass } from "@samasante/liquid-glass";
+
+export const Dashboard: React.FC = () => {
+  console.log('Dashboard component rendered');
+  return (
+    <Glass style={{ background: 'rgba(255,0,0,0.3)', padding: 20, borderRadius: 16, marginBottom: 20 }}>
+      <h2>Dashboard Test</h2>
+      <p>If you see this, the dashboard component is working</p>
+    </Glass>
+  );
+};
