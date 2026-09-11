@@ -5,9 +5,29 @@ import { SpaceAvailability } from './components/SpaceAvailability';
 import { LostFound } from './components/LostFound';
 import { EventFeed } from './components/EventFeed';
 import { ChatWidget } from './components/ChatWidget';
+import { LandingPage } from './pages/LandingPage';
 
 function App() {
+  const [showLandingPage, setShowLandingPage] = useState(true);
   const [activeTab, setActiveTab] = useState<'all' | 'spaces' | 'lost' | 'events' | 'chat'>('all');
+
+  const handleEnterDashboard = () => {
+    setShowLandingPage(false);
+  };
+
+  if (showLandingPage) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 50%, #f8fafc 100%)',
+          fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        }}
+      >
+        <LandingPage onEnterDashboard={handleEnterDashboard} />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -91,6 +111,23 @@ function App() {
             paddingBottom: '4px'
           }}
         >
+          <button
+            onClick={() => setShowLandingPage(true)}
+            style={{
+              padding: '10px 18px',
+              borderRadius: '12px',
+              border: '1px solid #cbd5e1',
+              background: 'rgba(255, 255, 255, 0.85)',
+              color: '#475569',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            🏠 Home Intro
+          </button>
           {[
             { id: 'all', label: '📊 All-in-One Dashboard' },
             { id: 'spaces', label: '🏢 Study Spaces' },
