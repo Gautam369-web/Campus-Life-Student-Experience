@@ -26,9 +26,71 @@ let spaces = [
   { id: 's5', name: 'Library Quiet Zone', occupied: false, building: 'Library' }
 ];
 let events = [
-  { id: 'e1', title: 'Python Workshop', description: 'Learn basics of Python', startsAt: new Date(Date.now() + 3600000).toISOString(), endsAt: new Date(Date.now() + 7200000).toISOString(), location: 'IT Building', tags: ['workshop', 'tech'] },
-  { id: 'e2', title: 'Cultural Night', description: 'Music and dance performances', startsAt: new Date(Date.now() + 7200000).toISOString(), endsAt: new Date(Date.now() + 10800000).toISOString(), location: 'Auditorium', tags: ['cultural', 'entertainment'] },
-  { id: 'e3', title: 'Hackathon Kickoff', description: 'Join the annual hackathon', startsAt: new Date(Date.now() + 10800000).toISOString(), endsAt: new Date(Date.now() + 14400000).toISOString(), location: 'Innovation Center', tags: ['hackathon', 'tech'] }
+  {
+    id: 'e1',
+    title: 'AI & Machine Learning Agentic Workshop',
+    description: 'Hands-on session building autonomous agents with Python, Gemini API, and React. Free stickers and snacks provided!',
+    category: 'tech',
+    organizer: 'Google Developer Student Club',
+    attendeesCount: 68,
+    isFeatured: true,
+    startsAt: new Date(Date.now() + 1800000).toISOString(), // in 30 mins
+    endsAt: new Date(Date.now() + 9000000).toISOString(),
+    location: 'IT Building - Lab 402',
+    tags: ['ai', 'python', 'agents', 'hands-on']
+  },
+  {
+    id: 'e2',
+    title: 'Annual 24-Hour Campus Hackathon 2026',
+    description: 'Sprint with cross-functional teams to build cutting-edge campus solutions. $5,000 in prizes and sponsor swags.',
+    category: 'hackathon',
+    organizer: 'Campus Tech Council',
+    attendeesCount: 142,
+    isFeatured: true,
+    startsAt: new Date(Date.now() + 7200000).toISOString(), // in 2 hours
+    endsAt: new Date(Date.now() + 93600000).toISOString(),
+    location: 'Innovation Hub - Main Arena',
+    tags: ['hackathon', 'innovation', 'coding', 'prizes']
+  },
+  {
+    id: 'e3',
+    title: 'Acoustic Sunset: Live Music & Open Mic',
+    description: 'Unwind after lectures with live acoustic guitar performances, student poets, and fresh cold brews.',
+    category: 'cultural',
+    organizer: 'Campus Arts & Music Guild',
+    attendeesCount: 85,
+    isFeatured: false,
+    startsAt: new Date(Date.now() + 14400000).toISOString(), // in 4 hours
+    endsAt: new Date(Date.now() + 21600000).toISOString(),
+    location: 'Central Amphitheatre',
+    tags: ['music', 'openmic', 'acoustic', 'chill']
+  },
+  {
+    id: 'e4',
+    title: 'Tech Career & Internship Networking Mixer',
+    description: 'Meet alumni engineers, tech recruiters, and startup founders. Bring your resumes and LinkedIn QR codes.',
+    category: 'career',
+    organizer: 'Placement & Career Advisory',
+    attendeesCount: 94,
+    isFeatured: false,
+    startsAt: new Date(Date.now() + 28800000).toISOString(), // in 8 hours
+    endsAt: new Date(Date.now() + 36000000).toISOString(),
+    location: 'Student Union - Banquet Hall',
+    tags: ['career', 'internship', 'networking', 'tech']
+  },
+  {
+    id: 'e5',
+    title: 'Inter-College Esports Valorant Tournament',
+    description: '5v5 tactical shooter showdown on 240Hz monitors. Live casting on campus Discord channel.',
+    category: 'sports',
+    organizer: 'Campus Gaming League',
+    attendeesCount: 110,
+    isFeatured: false,
+    startsAt: new Date(Date.now() + 43200000).toISOString(), // in 12 hours
+    endsAt: new Date(Date.now() + 54000000).toISOString(),
+    location: 'Cyber Lounge Arena',
+    tags: ['esports', 'valorant', 'gaming', 'tournament']
+  }
 ];
 
 // Initial Digital Twin Telemetry Zones
@@ -204,25 +266,46 @@ app.patch('/api/spaces/:id', (req, res) => {
 
 // Events
 app.get('/api/events', (req, res) => {
-  // Filter upcoming events
   const now = new Date();
-  const upcoming = events.filter(e => new Date(e.startsAt) > now);
-  res.json(upcoming);
+  // Return events that haven't concluded yet, sorted by start time
+  const active = events.filter(e => new Date(e.endsAt) > now);
+  active.sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
+  res.json(active);
 });
 
 app.post('/api/events', (req, res) => {
-  const event = { id: uuidv4(), ...req.body };
+  const event = {
+    id: uuidv4(),
+    category: req.body.category || 'general',
+    organizer: req.body.organizer || 'Student Club',
+    attendeesCount: 1,
+    isFeatured: req.body.isFeatured || false,
+    createdAt: new Date().toISOString(),
+    ...req.body
+  };
   events.push(event);
   io.emit('eventsUpdate', events);
   res.status(201).json(event);
 });
 
+// Event RSVP endpoint
+app.post('/api/events/:id/rsvp', (req, res) => {
+  const index = findIndex(events, req.params.id);
+  if (index === -1) return res.status(404).json({ error: 'Event not found' });
+  
+  const { action } = req.body || {}; // 'join' or 'leave'
+  const delta = action === 'leave' ? -1 : 1;
+  events[index].attendeesCount = Math.max(1, (events[index].attendeesCount || 1) + delta);
+  
+  io.emit('eventsUpdate', events);
+  res.json({ success: true, event: events[index] });
+});
+
 app.get('/api/events/recommend', (req, res) => {
-  // Simple recommendation: return all upcoming events for now
   const now = new Date();
-  const upcoming = events.filter(e => new Date(e.startsAt) > now);
-  // In a real app, we would use user preferences and NLP
-  res.json(upcoming.slice(0, 3)); // top 3
+  const upcoming = events.filter(e => new Date(e.endsAt) > now);
+  upcoming.sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
+  res.json(upcoming.slice(0, 4));
 });
 
 // Telemetry & Acoustic Heatmap Endpoints

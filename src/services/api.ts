@@ -17,6 +17,8 @@ export interface Space {
   building: string;
 }
 
+export type EventCategory = 'tech' | 'hackathon' | 'cultural' | 'career' | 'sports' | 'general';
+
 export interface CampusEvent {
   id?: string;
   title: string;
@@ -24,6 +26,10 @@ export interface CampusEvent {
   startsAt: string;
   endsAt: string;
   location: string;
+  category?: EventCategory;
+  organizer?: string;
+  attendeesCount?: number;
+  isFeatured?: boolean;
   tags?: string[];
 }
 
@@ -81,6 +87,27 @@ export const addEvent = async (event: Partial<CampusEvent>): Promise<CampusEvent
 export const fetchEventRecommendations = async (): Promise<CampusEvent[]> => {
   const response = await fetch(`${API_BASE}/events/recommend`);
   return response.json();
+};
+
+export const rsvpEvent = async (id: string, action: 'join' | 'leave' = 'join'): Promise<{ success: boolean; event: CampusEvent }> => {
+  const response = await fetch(`${API_BASE}/events/${id}/rsvp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action })
+  });
+  return response.json();
+};
+
+export const getGoogleCalendarUrl = (event: CampusEvent): string => {
+  const formatTime = (iso: string) => {
+    return new Date(iso).toISOString().replace(/-|:|\.\d\d\d/g, '');
+  };
+  const start = formatTime(event.startsAt);
+  const end = formatTime(event.endsAt);
+  const title = encodeURIComponent(event.title);
+  const details = encodeURIComponent(`${event.description}\n\nOrganizer: ${event.organizer || 'Campus Club'}\nLocation: ${event.location}`);
+  const location = encodeURIComponent(event.location);
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
 };
 
 export const sendChatMessage = async (message: string): Promise<{ response: string }> => {
